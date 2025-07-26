@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<robot name="lightrover" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find lightrover_description)/urdf/common.xacro"/>
+  <xacro:include filename="$(find lightrover_description)/urdf/base/base_urdf.xacro"/>
+  <xacro:include filename="$(find lightrover_description)/urdf/caster/caster_urdf.xacro"/>
+  <xacro:include filename="$(find lightrover_description)/urdf/wheel/wheel_urdf.xacro"/>
+  <xacro:include filename="$(find lightrover_description)/urdf/lidar/lidar_urdf.xacro"/>
+
+  <!-- =============== Link & Joint =============== -->
+  <!-- Base -->
+  <link name="base_footprint"/>
+  <xacro:base parent="base_footprint">
+	  <origin xyz="0 0 0.024"/>
+  </xacro:base>
+  
+
+  <!-- Caster -->
+  <xacro:caster parent="base_link">
+	  <origin xyz="-0.078 0 -0.014"/>
+  </xacro:caster>
+
+  <!-- Wheel -->
+  <!-- Right Wheel -->
+  <xacro:wheel prefix="right" parent="base_link">
+	  <origin xyz="0 -0.072 0.006"/>
+	  <axis xyz="0 1 0"/>
+  </xacro:wheel>
+  <!-- Left Wheel -->
+  <xacro:wheel prefix="left" parent="base_link">
+	  <origin xyz="0 0.072 0.006" rpy="0 0 ${M_PI}"/>
+	  <axis xyz="0 -1 0"/>
+  </xacro:wheel>
+
+  <!-- Sensors -->
+  <!-- Lidar -->
+  <xacro:lidar prefix="center" parent="base_link">
+  	<origin xyz="-0.07 0 0.086" rpy="0 0 -1.5708"/>
+  </xacro:lidar>
+
+
+
+
+
+  <!-- ===============  Transmission =============== -->
+  <xacro:wheel_trans prefix="right"/>
+  <xacro:wheel_trans prefix="left"/>
+
+  <!-- =============== Gazebo =============== -->
+  <gazebo>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotNamespace>lightrover</robotNamespace>
+    </plugin>
+  </gazebo>
+
+  <!-- Base -->
+  <xacro:base_gazebo/>
+
+  <!-- Wheel -->
+  <xacro:wheel_gazebo prefix="right"/>
+  <xacro:wheel_gazebo prefix="left"/>
+
+  <!-- LiDAR -->
+  <xacro:lidar_gazebo prefix="center"
+					   min_rad="-${M_PI}" max_rad="${M_PI}"
+					   min_range="0.10" max_range="8.0"/>
+  
+</robot>

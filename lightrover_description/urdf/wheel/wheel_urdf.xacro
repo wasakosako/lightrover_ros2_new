@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find lightrover_description)/urdf/common.xacro"/>
+  <xacro:include filename="$(find lightrover_description)/urdf/wheel/wheel_transmission.xacro"/>
+  <xacro:include filename="$(find lightrover_description)/urdf/wheel/wheel_gazebo.xacro"/>
+
+  <xacro:property name="wheel_radius" value="0.03"/>
+  <xacro:property name="wheel_length" value="0.005"/>
+  <xacro:property name="wheel_mass" value="0.0135"/>
+
+  <xacro:macro name="wheel" params="prefix parent *origin *axis">
+    <joint name="${prefix}_wheel_joint" type="continuous">
+      <parent link="${parent}"/>
+      <child link="${prefix}_wheel_link"/>
+      <xacro:insert_block name="origin"/>
+      <xacro:insert_block name="axis"/>
+    </joint>
+
+    <link name="${prefix}_wheel_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://lightrover_description/meshes/wheel.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="-${M_PI/2} 0 0"/>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0 0 0" rpy="-${M_PI/2} 0 0"/>
+				<mass value="2.0"/>
+        <inertia ixx="7.0238032e-6" ixy="0.0" ixz="-8.4978788e-11" iyy="3.5665783e-6" iyz="-2.2592014e-12" izz="3.5673196e-6"/>
+      </inertial>
+    </link>
+  </xacro:macro>
+
+</robot>
+      

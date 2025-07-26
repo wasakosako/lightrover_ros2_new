@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find lightrover_description)/urdf/caster/caster_gazebo.xacro"/>
+
+  <xacro:macro name="caster" params="parent *joint_origin">
+    <joint name="caster_joint" type="fixed">
+      <xacro:insert_block name="joint_origin"/>
+      <parent link="${parent}"/>
+      <child link="caster_link"/>
+    </joint>
+
+    <link name="caster_link">
+      <collision>
+        <geometry>
+          <sphere radius="0.01"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+        <mass value="0.05"/>
+        <inertia ixx="0.000001" ixy="0.0" ixz="0.0" iyy="0.000001" iyz="0.0" izz="0.000001"/>
+      </inertial>
+
+    </link>
+
+
+  </xacro:macro>  
+</robot>

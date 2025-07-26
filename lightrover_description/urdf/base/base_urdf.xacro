@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find lightrover_description)/urdf/base/base_gazebo.xacro"/>
+
+  <xacro:macro name="base" params="parent *joint_origin">
+    <joint name="base_joint" type="fixed">
+      <xacro:insert_block name="joint_origin"/>
+      <parent link="${parent}"/>
+      <child link="base_link"/>
+    </joint>
+
+    <link name="base_link">
+      <visual>
+        <geometry>
+          <mesh filename="package://lightrover_description/meshes/base_link.dae"/>
+        </geometry>
+      </visual>
+      <collision>
+				<origin xyz="-0.025 0.0 0.04" rpy="0.0 0.0 0.0"/>
+        <geometry>
+          <cylinder radius="0.075" length="0.08"/>
+        </geometry>
+      </collision>
+      <inertial>
+        <origin xyz="-0.025 0.0 0.024" rpy="0.0 0.0 0.0"/>
+        <mass value="0.0020"/>
+        <inertia ixx="8.0206480e-4" ixy="3.2953465e-5" ixz="3.1434721e-5" iyy="9.0126446e-4" iyz="-1.2433875e-4" izz="6.4944281e-4"/>
+      </inertial>
+
+    </link>
+
+
+  </xacro:macro>  
+</robot>

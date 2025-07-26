@@ -1,0 +1,61 @@
+{
+  // VS Code に表示される名前
+  "name": "ROS 2 Humble (Python only)",
+
+  // Dockerfile からビルド
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".",
+    "args": {
+      "USERNAME": "vscode",
+      "USER_UID": "1000",
+      "USER_GID": "1000"
+    }
+  },
+
+  // GPU 付きランタイム設定（不要なら --gpus 行を削除）
+  "runArgs": [
+    "--gpus", "all",
+    "--env", "NVIDIA_VISIBLE_DEVICES=all",
+    "--env", "NVIDIA_DRIVER_CAPABILITIES=compute,utility,graphics",
+    "--network=host",
+    "--ipc=host",
+    "--privileged",
+    "-e", "DISPLAY=${env:DISPLAY}",
+    "-v", "/tmp/.X11-unix:/tmp/.X11-unix:rw",
+    "-v", "/dev:/dev"
+  ],
+
+  // VS Code Settings
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "python.defaultInterpreterPath": "/usr/bin/python3",
+    "python.formatting.provider": "black",
+    "python.linting.enabled": true,
+    "python.linting.ruffEnabled": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "files.watcherExclude": {
+      "**/build/**": true,
+      "**/install/**": true,
+      "**/log/**": true
+    }
+  },
+
+  // 推奨拡張機能
+  "extensions": [
+    "ms-python.python",
+    "ms-toolsai.jupyter",
+    "ms-iot.vscode-ros"
+  ],
+
+  // よく使うポートをフォワード（必要なら追加）
+  "forwardPorts": [8080, 3000],
+
+  // ワークスペースルート
+   // ワークスペースルート
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/ros2_humble_ws,type=bind,consistency=cached",
+  "workspaceFolder": "/workspaces/ros2_humble_ws",
+
+  // デフォルトユーザー
+  "remoteUser": "vscode"
+}

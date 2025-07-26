@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find lightrover_description)/urdf/common.xacro"/>
+  <xacro:include filename="$(find lightrover_description)/urdf/lidar/lidar_gazebo.xacro"/>
+
+  <xacro:macro name="lidar" params="prefix parent *joint_origin">
+		<joint name="${prefix}_lidar_joint" type="fixed">
+	  	<xacro:insert_block name="joint_origin"/>
+	  	<parent link="${parent}"/>
+	  	<child link="laser_frame"/>
+		</joint>
+
+		<link name="laser_frame"/>
+
+  </xacro:macro>
+
+</robot>
