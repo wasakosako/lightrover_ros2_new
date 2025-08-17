@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import os
-
 from ament_index_python.packages import get_package_share_directory
-
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, Command
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from launch.conditions import IfCondition
@@ -42,24 +40,29 @@ def generate_launch_description():
             get_package_share_directory('gazebo_ros'), 'launch', 'gzclient.launch.py'))
     )
 
-    # robot_state_publisher 起動（URDF読み込み）
-    robot_state_publisher_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(launch_dir, 'lightrover_view.launch.py')
-        ),
-        launch_arguments={'use_sim_time': use_sim_time}.items()
+    # robot_description（xacroやurdfを読み込んで文字列化）
+    urdf_path = os.path.join(lightrover_description_dir, 'urdf', 'lightrover_urdf.xacro')
+    robot_description = {'robot_description': Command(['xacro ', urdf_path])}
+    use_sim_time_param = {'use_sim_time': use_sim_time}
+
+    # robot_state_publisher 起動
+    robot_state_publisher_cmd = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        parameters=[robot_description, use_sim_time_param],
+        output='screen'
     )
 
     # ros2_control_node 起動（URDF + YAML）
-    control_node = Node(
-        package='controller_manager',
-        executable='ros2_control_node',
-        parameters=[
-            os.path.join(lightrover_description_dir, 'urdf', 'lightrover.urdf'),
-            os.path.join(lightrover_description_dir, 'config', 'lightrover_controllers.yaml')
-        ],
-        output='screen'
-    )
+    # control_node = Node(
+    #     package='controller_manager',
+    #     executable='ros2_control_node',
+    #     parameters=[
+    #         robot_description,
+    #         os.path.join(lightrover_description_dir, 'config', 'lightrover_controllers.yaml')
+    #     ],
+    #     output='screen'
+    # )
 
     # ロボットのスポーン
     spawn_robot_cmd = Node(
@@ -74,17 +77,17 @@ def generate_launch_description():
     )
 
     # コントローラーのスポーン
-    spawn_joint_state_controller = Node(
+    spawn_joint_state_broadcaster = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['joint_state_controller'],
+        arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
         output='screen'
     )
 
     spawn_diff_drive_controller = Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['diff_drive_controller'],
+        arguments=['diff_drive_controller', '--controller-manager', '/controller_manager'],
         output='screen'
     )
 
@@ -98,15 +101,14 @@ def generate_launch_description():
 
     # LaunchDescription構築
     ld = LaunchDescription()
-
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_use_rviz_cmd)
     ld.add_action(start_gazebo_server_cmd)
     ld.add_action(start_gazebo_client_cmd)
     ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(control_node)
+    # ld.add_action(control_node)
     ld.add_action(spawn_robot_cmd)
-    ld.add_action(spawn_joint_state_controller)
+    ld.add_action(spawn_joint_state_broadcaster)
     ld.add_action(spawn_diff_drive_controller)
     ld.add_action(start_rviz_cmd)
 

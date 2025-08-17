@@ -3,10 +3,13 @@ project(lightrover_description)
 
 find_package(ament_cmake REQUIRED)
 
-install(
-  DIRECTORY launch meshes rviz urdf worlds configuration_files
-  DESTINATION share/${PROJECT_NAME}
-)
+# === share へリソースをインストール（存在するものだけ） ===
+foreach(dir urdf launch rviz worlds config meshes)
+  if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${dir})
+    install(DIRECTORY ${dir}/
+      DESTINATION share/${PROJECT_NAME}/${dir})
+  endif()
+endforeach()
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
